@@ -1,25 +1,23 @@
 <html>
 <head>
 <style>
+    .card_holder, .card_holder img.card, div.card {
+        width:  min(10vw, 15vh);
+        max-width: min(10vw, 15vh);
+    }
     .card_holder {
         display: inline-block;
-        max-width: 10%;
-        width: 10%;
-        margin: 1%;
-    }
-    .card_holder img.card {
-        width: 100%
+        margin: min(1vw, 1vh);
     }
 
     div.card {
         position: absolute;
-        top: max(3vh, 3vw, 1.5em);
-        width: 10vw;
+        top: max(min(4vh, 3vw), 1.5em);
     }
 
     #foundations {
         position: relative;
-        top: -max(3vh, 3vw, 1.5em);
+        top: -max(min(4vh, 3vw), 1.5em);
     }
 </style>
 
@@ -46,8 +44,8 @@
         <div class="card_holder" id="p3" ondrop="drop_handler(event)" ondragover="dragover_handler(event)"><img class="card" src="empty.svg" draggable="false"/></div>
         <div class="card_holder" id="p4" ondrop="drop_handler(event)" ondragover="dragover_handler(event)"><img class="card" src="empty.svg" draggable="false"/></div>
         <div class="card_holder" style="visibility:hidden"></div>
-        <div class="card_holder" id="d"><img class="card" src="empty.svg" ondblclick="to_pile(event)" draggable="false"/></div>
-        <div class="card_holder" id="stock"><img class="card" src="back.svg" onclick="take()" draggable="false"/></div>
+        <div class="card_holder" id="d"><img class="card" ondblclick="to_pile(event)" draggable="false"/></div>
+        <div class="card_holder" id="stock"><img class="card" onclick="take()" draggable="false"/></div>
     </div>
 
     <div id="foundations">
