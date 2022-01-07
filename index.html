@@ -92,7 +92,15 @@
         const empty_card_uri = "cards/empty.svg";
         const back_card_uri = "cards/back.svg";
 
-        const server_base_url = 'http://localhost:8000';
+        const server_base_url = getServerUrl();
+
+        function getServerUrl() {
+            let url = (new URL(document.location)).searchParams.get('serverUrl');
+            if (url == null) {
+                url = ".";
+            }
+            return url;
+        }
 
         let game_url;
         
