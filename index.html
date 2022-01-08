@@ -1,6 +1,6 @@
 <html>
 <head>
-
+<script src="DragDropTouch.js"></script>
 <style>
     :root {
         font-family: sans-serif;
@@ -69,10 +69,10 @@
         <button submit="false" onclick="new_game(true)">New game</button>
     </header>
     <div>
-        <div class="card_holder" id="p1" ondrop="drop_handler(event)" ondragover="dragover_handler(event)"><img class="card" src="empty.svg" draggable="false"/></div>
-        <div class="card_holder" id="p2" ondrop="drop_handler(event)" ondragover="dragover_handler(event)"><img class="card" src="empty.svg" draggable="false"/></div>
-        <div class="card_holder" id="p3" ondrop="drop_handler(event)" ondragover="dragover_handler(event)"><img class="card" src="empty.svg" draggable="false"/></div>
-        <div class="card_holder" id="p4" ondrop="drop_handler(event)" ondragover="dragover_handler(event)"><img class="card" src="empty.svg" draggable="false"/></div>
+        <div class="card_holder" id="p1" ondrop="drop_handler(event)" ondragover="dragover_handler(event)"><img class="card" draggable="false"/></div>
+        <div class="card_holder" id="p2" ondrop="drop_handler(event)" ondragover="dragover_handler(event)"><img class="card" draggable="false"/></div>
+        <div class="card_holder" id="p3" ondrop="drop_handler(event)" ondragover="dragover_handler(event)"><img class="card" draggable="false"/></div>
+        <div class="card_holder" id="p4" ondrop="drop_handler(event)" ondragover="dragover_handler(event)"><img class="card" draggable="false"/></div>
         <div class="card_holder" style="visibility:hidden"></div>
         <div class="card_holder" id="d"><img class="card" ondblclick="to_pile(event)" draggable="false"/></div>
         <div class="card_holder" id="stock"><img class="card" onclick="take()" onmousedown="event.preventDefault()" draggable="false"/></div>
@@ -236,27 +236,6 @@
             .then(json => draw_game(json));
         }
 
-        function getUriForCard(card) {
-            let rank;
-            switch (card.rank) {
-                case 'ACE': rank = '1'; break;
-                case 'TWO': rank = '2'; break;
-                case 'THREE': rank = '3'; break;
-                case 'FOUR': rank = '4'; break;
-                case 'FIVE': rank = '5'; break;
-                case 'SIX': rank = '6'; break;
-                case 'SEVEN': rank = '7'; break;
-                case 'EIGHT': rank = '8'; break;
-                case 'NINE': rank = '9'; break;
-                case 'TEN': rank = '10'; break;
-                default: rank = card.rank.toLowerCase();
-            }
-
-            let suit = card.suit.toLowerCase().replace(/s$/, '');
-            
-            return getUriForCardRankSuit(rank, suit);
-        }
-
         function getUriForCardRankSuit(rank, suit) {
             return 'cards/' + rank + '_' + suit + '.svg';
         }
@@ -327,6 +306,49 @@
         // CTRL + Z: undo
         document.onkeydown = (ev) => { if (ev.keyCode == 90 && ev.ctrlKey) undo(); }
 
+        let cached_cards = [[]];
+        function getUriForCard(card) {
+            let rank;
+            switch (card.rank) {
+                case 'ACE': rank = '1'; break;
+                case 'TWO': rank = '2'; break;
+                case 'THREE': rank = '3'; break;
+                case 'FOUR': rank = '4'; break;
+                case 'FIVE': rank = '5'; break;
+                case 'SIX': rank = '6'; break;
+                case 'SEVEN': rank = '7'; break;
+                case 'EIGHT': rank = '8'; break;
+                case 'NINE': rank = '9'; break;
+                case 'TEN': rank = '10'; break;
+                default: rank = card.rank.toLowerCase();
+            }
+
+            let suit = card.suit.toLowerCase().replace(/s$/, '');
+            
+            if (cached_cards[suit] && cached_cards[suit][rank]) {
+                return cached_cards[suit][rank];
+            }
+
+            return getUriForCardRankSuit(rank, suit);
+        }
+
+        function preload_card(suit, rank) {
+            fetch (getUriForCardRankSuit(rank, suit))
+            .then(response => {
+                if (response.ok) {
+                return response.blob();
+                }
+            })
+            .then (img => {
+                if (!cached_cards[suit]) {
+                        cached_cards[suit] = [];
+                    }
+
+                    console.log(img);
+                    cached_cards[suit][rank] = URL.createObjectURL(img);
+                });
+        }
+
         //Preload card images
         setTimeout( () => {
             ["club", "spade", "heart", "diamond"].forEach (suit => {
@@ -337,10 +359,6 @@
             })
         }, 100);
 
-        function preload_card(suit, rank) {
-            var img = new Image();
-            img.src = getUriForCardRankSuit(rank, suit);
-        }
     </script>
 </body>
 
