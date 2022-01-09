@@ -91,6 +91,8 @@
     <script>
         const empty_card_uri = "cards/empty.svg";
         const back_card_uri = "cards/back.svg";
+        const empty_card_name = "Empty";
+        const back_card_name = "Back";
 
         const server_base_url = getServerUrl();
 
@@ -129,28 +131,36 @@
             draw_foundations(status.foundations);
         }
 
+        function setCardImage(img, uri, name) {
+            img.src = uri;
+            img.alt = name;
+        }
         function draw_deck(status) {
             let card_uri = empty_card_uri;
+            let card_name = empty_card_name;
             let draggable = false;
             let deck = document.getElementById("d");
             deck.removeEventListener("dragstart", dragstart);
 
             if (status.cards_on_waste > 0) {
                 card_uri = getUriForCard(status.top_card_on_waste);
+                card_name = getNameForCard(status.top_card_on_waste);
                 draggable = true;
                 deck.addEventListener("dragstart", dragstart);
             } 
 
-            deck.querySelector("img.card").src = card_uri;
+            setCardImage(deck.querySelector("img.card"), card_uri, card_name);
             deck.draggable = draggable;
 
             if (status.cards_on_stock > 0) {
                 card_uri = back_card_uri;
+                card_name = back_card_name;
             } else {
                 card_uri = empty_card_uri;
+                card_name = empty_card_name;
             }
             
-            document.getElementById("stock").querySelector("img.card").src = card_uri;
+            setCardImage(document.getElementById("stock").querySelector("img.card"), card_uri, card_name);
         }
 
         function draw_piles(status) {
@@ -161,6 +171,7 @@
 
         function draw_pile(status, id) {
             let card_uri = empty_card_uri;
+            let card_name = empty_card_name;
             let draggable = false;
 
             let pile = document.getElementById(id);
@@ -168,12 +179,13 @@
             
             if (status.num_cards > 0) {
                 card_uri = getUriForCard(status.top_card);
+                card_name = getNameForCard(status.top_card);
                 draggable = true;
                 pile.addEventListener("dragstart", dragstart);
             }
             
             pile.draggable = draggable;
-            pile.querySelector("img.card").src = card_uri;
+            setCardImage(pile.querySelector("img.card"), card_uri, card_name);
         }
 
         function draw_foundations(status) {
@@ -195,13 +207,13 @@
 
             if (status.num_hidden === 0 && status.visible.length === 0) {
                 let template = document.getElementById("foundation_card_empty");
-                template.content.querySelector("img").src = empty_card_uri;
+                setCardImage(template.content.querySelector("img"),  empty_card_uri, empty_card_name);
                 foundation.appendChild(document.importNode(template.content, true));
             } else {
                 let el = foundation;
                 let i = 0;
                 for (; i < status.num_hidden; i++) {
-                    el = draw_foundation_card(el, "card_" + id + "_" + i, "foundation_card_back", back_card_uri);
+                    el = draw_foundation_card(el, "card_" + id + "_" + i, "foundation_card_back", back_card_uri, back_card_name);
                 }
 
                 for (let j = 0; j < status.visible.length; j++) {
@@ -209,16 +221,17 @@
                         el, 
                         "card_" + id + "_" + (i + j), 
                         "foundation_card",
-                        getUriForCard(status.visible[j])
+                        getUriForCard(status.visible[j]),
+                        getNameForCard(status.visible[j])
                     );
                 }
 
             }
         }
 
-        function draw_foundation_card(el, id, template_id, image_uri) {
+        function draw_foundation_card(el, id, template_id, card_uri, card_name) {
             let template = document.getElementById(template_id);
-            template.content.querySelector("img.card").src = image_uri;
+            setCardImage(template.content.querySelector("img.card"), card_uri, card_name);
             template.content.querySelector("div.card").setAttribute("id", id);
             el.appendChild(document.importNode(template.content, true));
             return document.getElementById(id);
@@ -330,6 +343,10 @@
             }
 
             return getUriForCardRankSuit(rank, suit);
+        }
+
+        function getNameForCard(card) {
+            return card.rank + ' OF ' + card.suit;
         }
 
         function preload_card(suit, rank) {
