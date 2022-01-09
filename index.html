@@ -44,6 +44,23 @@
     #foundations[shrink='true'] div.card {
         top: 3vh;
     }
+
+    #info {
+        background-color: #00000050;
+        position: fixed;
+        top:0;
+        left:0;
+        right:0;
+        bottom:0;
+        padding: 10vw 10vh;
+        z-index: 100;
+    }
+
+    #info > div {
+        background-color: white;
+        padding: min(5vh, 5vw);
+        border-radius: min(2vh, 2vw);
+    }
 </style>
 
 </head>
@@ -65,9 +82,25 @@
     </template>
     <header>
         <button submit="false" onclick="undo()">Undo</button>
-        <span>Speevy's Klondike</span>
+        <span>Speevy's Klondike <a onclick="document.getElementById('info').style.display='block'; return false">&#9432;</a></span>
         <button submit="false" onclick="new_game(true)">New game</button>
     </header>
+    <div id="info" style="display:none">
+        <div>
+            <h1>Speevy's Klondike</h1>
+            <p>This is an implementation of the classical klondike solitary card game.</p>
+            <p>Source code:<ul>
+                <li>Backend (rust): https://github.com/speevy/Klondike-rust</li>
+                <li>Frontend: https://github.com/speevy/Klondike-html</li>
+            </ul></p>
+            <p>Credits:<ul>
+                <li>Card images from libkdegames: https://github.com/KDE/libkdegames/tree/master/src/carddecks/svg-dondorf</li>
+                <li>DragDropTouch.js polyfill by https://github.com/Bernardo-Castilho/dragdroptouch</li>
+            </ul></p>
+            <p></p>
+            <button onclick="document.getElementById('info').style.display='none'">Done</button>
+        </div>
+    </div>
     <div>
         <div class="card_holder" id="p1" ondrop="drop_handler(event)" ondragover="dragover_handler(event)"><img class="card" draggable="false"/></div>
         <div class="card_holder" id="p2" ondrop="drop_handler(event)" ondragover="dragover_handler(event)"><img class="card" draggable="false"/></div>
