@@ -143,6 +143,10 @@
             if (need_confirm && !confirm("Do you want to end this game and start a new one?")) {
                 return;
             }
+            
+            if (game_url) {
+                fetch(game_url, {method: 'DELETE'});
+            }
 
             fetch(server_base_url + '/klondike/game', {method:'POST'})
             .then(response => {
